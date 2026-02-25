@@ -47,63 +47,33 @@ app.post("/interview/evaluate", async (req, res) => {
   const { topic, question, answer } = req.body;
 
   try {
+    console.log("Evaluate route hit");
+    console.log("Answer length:", answer?.length);
+
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
       messages: [
-  {
-    role: "system",
-    content: `
-You are a technical interview evaluator.
-
-Return feedback in this EXACT format:
-
-Score: <number>/10
-
-Strengths:
-• <point 1>
-• <point 2>
-
-Improvements:
-• <point 1>
-• <point 2>
-
-Correct Answer:
-<3-4 line ideal answer>
-
-Do NOT add any extra text.
-Do NOT say "Sure".
-Do NOT add explanations outside this format.
-`
-  },
-  {
-    role: "user",
-    content: `
-Question: ${question}
-
-Candidate Answer: ${answer}
-
-Evaluate this answer.
-`
-  }
-]
+        { role: "system", content: "You are an interview evaluator." },
+        { role: "user", content: `Question: ${question}\nAnswer: ${answer}` }
+      ]
     });
 
-    const feedback = response.choices[0].message.content.trim();
+    console.log("OpenAI success");
 
-    // SAVE TO DATABASE HERE
-    const newInterview = new Interview({
-      topic,
-      question,
-      answer,
-      feedback
-    });
-
-    await newInterview.save();
+    const feedback = response.choices[0].message.content;
 
     res.json({ feedback });
-    
+
   } catch (error) {
-    res.status(500).json({ error: "OpenAI error" });
+    console.error("🔥 FULL OPENAI ERROR:");
+    console.error(error);
+    console.error("Message:", error.message);
+    console.error("Stack:", error.stack);
+
+    res.status(500).json({
+      error: error.message,
+      type: error.name
+    });
   }
 });
 
