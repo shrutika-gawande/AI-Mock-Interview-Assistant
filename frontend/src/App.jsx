@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import './App.css';
 
-// Use environment variable if available, fallback to relative API for preview
+
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000"
 });
@@ -14,7 +14,7 @@ export default function App() {
   const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
 
   const generateQuestion = async () => {
     try {
@@ -57,74 +57,90 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-6">
-      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-lg p-6 space-y-4">
-        <h1 className="text-2xl font-bold text-center">
-          AI Mock Interview Assistant
-        </h1>
+    <div className="min-h-screen main-bg flex items-center justify-center p-6">
+      <div className="card-container">
 
-        <div className="flex gap-3 justify-center">
-          <select
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            className="border rounded-lg px-3 py-2"
-          >
-            <option value="DSA">DSA</option>
-            <option value="OOP">OOP</option>
-            <option value="DBMS">DBMS</option>
-            <option value="OS">OS</option>
-          </select>
-
-          <button
-            onClick={generateQuestion}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "Generate Question"}
-          </button>
+        {/* Header */}
+        <div className="card-header">
+          <div className="card-icon">🤖</div>
+          <h1 className="card-title">AI Mock Interview Assistant</h1>
+          <p className="card-subtitle">Practice. Learn. Get Hired.</p>
         </div>
 
+        {/* Topic Selector */}
+        <div className="topic-section">
+          <label className="input-label">Select Topic</label>
+          <div className="topic-row">
+            <select
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              className="topic-select"
+            >
+              <option value="DSA">DSA</option>
+              <option value="OOP">OOP</option>
+              <option value="DBMS">DBMS</option>
+              <option value="OS">OS</option>
+            </select>
+
+            <button
+              onClick={generateQuestion}
+              className="generate-btn"
+              disabled={loading}
+            >
+              {loading ? "⏳ Loading..." : "⚡ Generate Question"}
+            </button>
+          </div>
+        </div>
+
+        {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg text-sm">
-            {error}
+          <div className="error-box">
+            ⚠️ {error}
           </div>
         )}
 
+        {/* Question */}
         {question && (
-          <div className="bg-slate-50 p-4 rounded-lg">
-            <p className="font-semibold">Question:</p>
-            <p>{question}</p>
+          <div className="question-box">
+            <p className="question-label">Question:</p>
+            <p className="question-text">{question}</p>
           </div>
         )}
 
+        {/* Answer */}
         {question && (
-          <textarea
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Type your answer here..."
-            className="w-full border rounded-lg p-3 min-h-30"
-          />
+          <div className="answer-section">
+            <label className="input-label">✍️ Your Answer</label>
+            <textarea
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder="Type your answer here..."
+              className="answer-textarea"
+            />
+          </div>
         )}
 
+        {/* Submit */}
         {question && (
           <button
             onClick={submitAnswer}
-            className="w-full bg-green-600 text-white py-2 rounded-lg"
+            className="submit-btn"
             disabled={loading}
           >
-            {loading ? "Evaluating..." : "Submit Answer"}
+            {loading ? "⏳ Evaluating..." : "🚀 Submit Answer"}
           </button>
         )}
 
+        {/* Feedback */}
         {feedback && (
-          <div className="bg-green-50 border border-green-200 p-4 rounded-lg whitespace-pre-line">
-            <p className="font-semibold">AI Feedback:</p>
-            {feedback}
+          <div className="feedback-box">
+            <p className="feedback-label">🧠 AI Feedback</p>
+            <p className="feedback-text">{feedback}</p>
           </div>
         )}
 
-        <p className="text-xs text-center text-gray-500">
-          MERN + OpenAI • API base: {API.defaults.baseURL}
+        <p className="card-footer">
+          MERN + OpenAI • {API.defaults.baseURL}
         </p>
       </div>
     </div>
